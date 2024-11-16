@@ -6,7 +6,8 @@ import {
   Package2,
   PanelLeft,
   Settings,
-  Volleyball
+  Volleyball,
+  Mountain
 } from 'lucide-react';
 
 import {
@@ -43,8 +44,8 @@ export default function DashboardLayout({
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <MobileNav />
-            <DashboardBreadcrumb />
-            <SearchInput />
+            <Header />
+            <div className="flex-1"></div>
             <User />
           </header>
           <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
@@ -134,26 +135,14 @@ function MobileNav() {
   );
 }
 
-function DashboardBreadcrumb() {
+function Header() {
   return (
-    <Breadcrumb className="hidden md:flex">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="#">Dashboard</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="#">Products</Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>All Products</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center space-x-2 text-green-700 hover:text-green-800 transition-colors">
+              <span className="text-xl font-semibold">Everest Warriors</span>
+            </Link>
+          </div>
+        </div>
   );
 }
