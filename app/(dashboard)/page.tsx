@@ -1,11 +1,9 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { Mountain, Calendar } from 'lucide-react'
+import Image from 'next/image';
+import { GameCheckinButton } from '@/components/game-signup-button';
 
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
-
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center">
           <Image
@@ -19,13 +17,7 @@ export default function HomePage() {
           <p className="text-xl mb-8 text-gray-600">
             Join us for an exciting pickup football game!
           </p>
-          <Link
-            href="/signup"
-            className="inline-flex items-center px-6 py-3 text-lg font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors"
-          >
-            <Calendar className="mr-2 h-5 w-5" />
-            Sign Up for Next Game
-          </Link>
+          <GameCheckinButton />
         </div>
       </main>
 
@@ -35,5 +27,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
