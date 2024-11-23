@@ -7,6 +7,7 @@ import { User, Mail, MapPin, Edit } from 'lucide-react'
 
 export default function ProfileViewPage() {
   // In a real application, you would fetch this data from your backend
+  
   const user = {
     firstName: "Alex",
     lastName: "Johnson",
