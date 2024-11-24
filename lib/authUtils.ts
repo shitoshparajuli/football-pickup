@@ -1,4 +1,4 @@
-import { getCurrentUser, signOut as amplifySignOut, fetchAuthSession, signInWithRedirect } from 'aws-amplify/auth';
+import { getCurrentUser, signOut as amplifySignOut, fetchAuthSession, signInWithRedirect, fetchUserAttributes } from 'aws-amplify/auth';
 import { configureClientside } from './amplifyClient';
 
 // Initialize Amplify on the client side
@@ -15,10 +15,13 @@ export async function getAuthUser() {
     }
     
     const user = await getCurrentUser();
-    console.log('User found:', user);
-    return user;
+    
+    return {
+      userId: user.userId,
+      username: user.username
+    };
   } catch (error) {
-    console.log('No user found or error:', error);
+    console.error('No user found or error:', error);
     return null;
   }
 }

@@ -4,9 +4,10 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 const API_ENDPOINT = 'https://oc896sn63e.execute-api.us-west-2.amazonaws.com/Test';
 
 export type UserData = {
-  firstName: string;
-  lastName: string;
-  email: string;
+  UserId: string;
+  FirstName: string;
+  LastName: string;
+  PreferredPositions: string[];
 };
 
 async function getAuthToken() {
@@ -25,13 +26,7 @@ async function getAuthToken() {
   const accessToken = session.tokens?.accessToken?.toString();
   const idToken = session.tokens?.idToken?.toString();
   
-  console.log('Access Token for testing:', accessToken);
-  console.log('ID Token for testing:', idToken);
-  
   const token = idToken;
-  if (token) {
-    console.log('Using access token:', token);
-  }
   return token;
 }
 
@@ -81,13 +76,17 @@ export async function updateUserProfile(userData: UserData) {
       throw new Error('No authentication token available');
     }
 
+    console.log('Updating user profile:', userData);
+
     const response = await fetch(`${API_ENDPOINT}/user`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'Origin': 'http://localhost:3000',
+        'Accept': 'application/json'
       },
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userData)
     });
 
     if (!response.ok) {

@@ -18,7 +18,8 @@ export default function AuthCallback() {
         
         // Get the authenticated user and update their profile
         const user = await getAuthUser();
-        console.log('Got auth user:', user);
+        console.log('Got auth user:', user.given_name);
+        console.log('User Name:', user?.userId);
         
         if (user?.userId) {
           console.log('Attempting to get user profile for:', user.userId);
@@ -28,9 +29,10 @@ export default function AuthCallback() {
           if (!existingUser) {
             console.log('User not found, creating new profile');
             const updateResult = await updateUserProfile({
-              email: user.username,
-              firstName: user.username.split('_')[1] || '', // Extract ID from google_ID format
-              lastName: '',
+              UserId: user.userId,
+              FirstName: user.given_name || '',
+              LastName: user.family_name || '',
+              PreferredPositions: []
             });
             console.log('Profile update result:', updateResult);
           } else {
