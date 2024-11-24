@@ -28,11 +28,49 @@ async function getAuthToken() {
   console.log('Access Token for testing:', accessToken);
   console.log('ID Token for testing:', idToken);
   
-  const token = accessToken;
+  const token = idToken;
   if (token) {
-    console.log('Using access token:', token.substring(0, 50) + '...');
+    console.log('Using access token:', token);
   }
   return token;
+}
+
+export async function getUserProfile(userId: string) {
+  try {
+    const fullUrl = `${API_ENDPOINT}/user/`;
+    
+    const response = await fetch(`${fullUrl}${encodeURIComponent(userId)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Origin': 'http://localhost:3000',
+        'Accept': 'application/json',
+        // Include authentication headers if your API requires them
+        // 'Authorization': 'Bearer YOUR_JWT_TOKEN',
+        // 'x-api-key': 'YOUR_API_KEY',
+      },
+      credentials: 'include',
+    });
+
+    console.log('User profile response:', response);
+
+    if (response.status === 404) {
+      console.log('User not found:', userId);
+      return null;
+    }
+
+    if (!response.ok) {
+      // Handle other HTTP errors
+      const errorData = await response.json();
+      throw new Error(`Error ${response.status}: ${errorData.message || response.statusText}`);
+    }
+
+    const userProfile = await response.json();
+    return userProfile;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    throw error;
+  }
 }
 
 export async function updateUserProfile(userData: UserData) {
@@ -60,51 +98,6 @@ export async function updateUserProfile(userData: UserData) {
     return json;
   } catch (error) {
     console.error('Error updating user profile:', error);
-    throw error;
-  }
-}
-
-export async function getUserProfile() {
-  try {
-    const token = await getAuthToken();
-    console.log('Got auth token:', token ? 'Token present' : 'No token');
-    if (!token) {
-      throw new Error('No authentication token available');
-    }
-
-    const fullUrl = `${API_ENDPOINT}/user`;
-    console.log('Request path:', fullUrl);
-    console.log('Request headers:', {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token.substring(0, 20)}...`,
-    });
-    
-    const response = await fetch(fullUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    console.log('Response status:', response.status);
-    if (response.status === 401) {
-      const responseText = await response.text();
-      console.log('Response body:', responseText);
-    }
-    
-    if (response.status === 404) {
-      return null;
-    }
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log('Error getting user profile:', error);
     throw error;
   }
 }

@@ -20,25 +20,25 @@ export default function AuthCallback() {
         const user = await getAuthUser();
         console.log('Got auth user:', user);
         
-        // if (user?.username) {
-        //   console.log('Attempting to get user profile for:', user.username);
-        //   const existingUser = await getUserProfile(user.username);
-        //   console.log('Get user profile result:', existingUser);
+        if (user?.userId) {
+          console.log('Attempting to get user profile for:', user.userId);
+          const existingUser = await getUserProfile(user.userId);
+          console.log('Get user profile result:', existingUser);
           
-        //   if (!existingUser) {
-        //     console.log('User not found, creating new profile');
-        //     const updateResult = await updateUserProfile({
-        //       email: user.username,
-        //       firstName: user.username.split('_')[1] || '', // Extract ID from google_ID format
-        //       lastName: '',
-        //     });
-        //     console.log('Profile update result:', updateResult);
-        //   } else {
-        //     console.log('Existing user found:', existingUser);
-        //   }
-        // } else {
-        //   console.log('No username found in user details:', user);
-        // }
+          if (!existingUser) {
+            console.log('User not found, creating new profile');
+            const updateResult = await updateUserProfile({
+              email: user.username,
+              firstName: user.username.split('_')[1] || '', // Extract ID from google_ID format
+              lastName: '',
+            });
+            console.log('Profile update result:', updateResult);
+          } else {
+            console.log('Existing user found:', existingUser);
+          }
+        } else {
+          console.log('No username found in user details:', user);
+        }
         
         router.push('/profile');
       } catch (error) {
