@@ -44,7 +44,7 @@ export default function EditProfile() {
           if (profile.PreferredPositions?.length > 0) {
             // Convert preferred positions array to ranked positions
             setRankedPositions(
-              profile.PreferredPositions.map((pos, index) => ({
+              profile.PreferredPositions.map((pos: string, index) => ({
                 position: pos as Position,
                 rank: index + 1
               }))
@@ -54,7 +54,7 @@ export default function EditProfile() {
           setFirstName(user.given_name || '')
           setLastName(user.family_name || '')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading profile:', error)
       } finally {
         setLoading(false)
@@ -100,7 +100,7 @@ export default function EditProfile() {
       })
 
       router.push('/profile')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving profile:', error)
     } finally {
       setSaving(false)

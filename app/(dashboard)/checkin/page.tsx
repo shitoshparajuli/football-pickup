@@ -37,7 +37,7 @@ export default function CheckinPage() {
             lastName: user.username || ''
           }));
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error checking auth status:', error);
         setIsAuthenticated(false);
       }
@@ -56,7 +56,7 @@ export default function CheckinPage() {
 
       // Redirect to dashboard or confirmation page
       router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during check-in:', error);
       setError('Failed to check in. Please try again.');
     } finally {

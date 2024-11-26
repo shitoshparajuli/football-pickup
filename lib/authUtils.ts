@@ -20,7 +20,7 @@ export async function getAuthUser() {
       userId: user.userId,
       username: user.username
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('No user found or error:', error);
     return null;
   }
@@ -38,7 +38,7 @@ export async function handleAuthResponse() {
     // The actual token exchange is handled by Amplify internally
     const session = await fetchAuthSession();
     return session;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in handleAuthResponse:', error);
     throw error;
   }
@@ -49,7 +49,7 @@ export async function signIn(provider?: 'Google') {
     await signInWithRedirect({
       provider: provider === 'Google' ? 'Google' : undefined
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error signing in:', error);
     throw error;
   }
@@ -59,7 +59,7 @@ export async function signOut() {
   try {
     await amplifySignOut();
     window.location.href = '/';
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error signing out:', error);
     throw error;
   }
