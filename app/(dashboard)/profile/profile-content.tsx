@@ -1,9 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
-import { getAuthUser } from '@/lib/authUtils';
-import { getUserProfile } from '@/lib/userApi';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 interface Profile {
   FirstName: string;
@@ -11,14 +8,20 @@ interface Profile {
   PreferredPositions: string[];
 }
 
-function ProfileContent({ profile }: { profile: Profile }) {
+interface ProfileContentProps {
+  profile: Profile;
+}
+
+export default function ProfileContent({ profile }: ProfileContentProps) {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Profile</h2>
           <button
-            onClick={() => redirect('/profile/edit')}
+            onClick={() => router.push('/profile/edit')}
             className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           >
             Edit Profile
@@ -47,41 +50,5 @@ function ProfileContent({ profile }: { profile: Profile }) {
         </div>
       </div>
     </div>
-  );
-}
-
-async function ProfileData() {
-  try {
-    const user = await getAuthUser();
-    if (!user?.userId) {
-      redirect('/login');
-    }
-
-    const profile = await getUserProfile(user.userId);
-    if (!profile) {
-      redirect('/profile/edit');
-    }
-
-    return <ProfileContent profile={profile} />;
-  } catch (error) {
-    console.error('Error loading profile:', error);
-    redirect('/login');
-  }
-}
-
-export default async function ProfilePage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-4">Loading...</h1>
-            <p className="text-gray-600">Please wait...</p>
-          </div>
-        </div>
-      }
-    >
-      <ProfileData />
-    </Suspense>
   );
 }

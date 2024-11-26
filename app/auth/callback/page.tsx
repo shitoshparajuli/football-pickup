@@ -3,23 +3,21 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { handleAuthResponse, getAuthUser } from '@/lib/authUtils';
-import { updateUserProfile, getUserProfile } from '@/lib/userApi';
+import { getUserProfile, updateUserProfile } from '@/lib/userApi';
+import { Suspense } from 'react';
 
-export default function AuthCallback() {
+function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        console.log('Starting auth callback handling...');
         await handleAuthResponse();
-        console.log('Auth response handled successfully');
         
         // Get the authenticated user and update their profile
         const user = await getAuthUser();
-        console.log('Got auth user:', user.given_name);
-        console.log('User Name:', user?.userId);
+        console.log('Got auth user:', user);
         
         if (user?.userId) {
           // Always redirect to profile page, which handles both new and existing users
@@ -35,13 +33,30 @@ export default function AuthCallback() {
       }
     };
 
-    console.log('Auth callback component mounted');
     handleCallback();
   }, [router, searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold mb-4">Authenticating...</h1>
+        <p className="text-gray-600">Please wait while we complete the sign-in process.</p>
+      </div>
     </div>
+  );
+}
+
+export default function CallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold mb-4">Loading...</h1>
+          <p className="text-gray-600">Please wait...</p>
+        </div>
+      </div>
+    }>
+      <CallbackContent />
+    </Suspense>
   );
 }

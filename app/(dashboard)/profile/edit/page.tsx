@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +18,7 @@ interface RankedPosition {
   rank: number
 }
 
-export default function EditProfile() {
+function EditProfileForm() {
   const router = useRouter()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -42,17 +42,16 @@ export default function EditProfile() {
           setFirstName(profile.FirstName)
           setLastName(profile.LastName)
           if (profile.PreferredPositions?.length > 0) {
-            // Convert preferred positions array to ranked positions
             setRankedPositions(
-              profile.PreferredPositions.map((pos: string, index) => ({
+              profile.PreferredPositions.map((pos: string, index: number) => ({
                 position: pos as Position,
                 rank: index + 1
               }))
             )
           }
         } else {
-          setFirstName(user.given_name || '')
-          setLastName(user.family_name || '')
+          setFirstName('')
+          setLastName('')
         }
       } catch (error: any) {
         console.error('Error loading profile:', error)
@@ -87,10 +86,9 @@ export default function EditProfile() {
         throw new Error('No user ID found')
       }
 
-      // Sort positions by rank and extract just the position names
-      const sortedPositions = [...rankedPositions]
+      const sortedPositions = rankedPositions
         .sort((a, b) => a.rank - b.rank)
-        .map(p => p.position)
+        .map(rp => rp.position)
 
       await updateUserProfile({
         UserId: user.userId,
@@ -191,3 +189,5 @@ export default function EditProfile() {
     </div>
   )
 }
+
+export default EditProfileForm;
