@@ -22,27 +22,13 @@ export default function AuthCallback() {
         console.log('User Name:', user?.userId);
         
         if (user?.userId) {
-          console.log('Attempting to get user profile for:', user.userId);
-          const existingUser = await getUserProfile(user.userId);
-          console.log('Get user profile result:', existingUser);
-          
-          if (!existingUser) {
-            console.log('User not found, creating new profile');
-            const updateResult = await updateUserProfile({
-              UserId: user.userId,
-              FirstName: user.given_name || '',
-              LastName: user.family_name || '',
-              PreferredPositions: []
-            });
-            console.log('Profile update result:', updateResult);
-          } else {
-            console.log('Existing user found:', existingUser);
-          }
+          // Always redirect to profile page, which handles both new and existing users
+          router.push('/profile');
         } else {
           console.log('No username found in user details:', user);
+          router.push('/login');
         }
         
-        router.push('/profile');
       } catch (error) {
         console.error('Error in auth callback:', error);
         router.push('/login');

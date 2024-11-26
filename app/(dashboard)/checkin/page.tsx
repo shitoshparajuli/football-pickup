@@ -33,7 +33,6 @@ export default function CheckinPage() {
           // Pre-fill form with user data
           setFormData(prev => ({
             ...prev,
-            email: user.signInDetails?.email || '',
             firstName: user.signInDetails?.given_name || '',
             lastName: user.signInDetails?.family_name || ''
           }));
