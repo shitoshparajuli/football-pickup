@@ -33,8 +33,8 @@ export default function CheckinPage() {
           // Pre-fill form with user data
           setFormData(prev => ({
             ...prev,
-            firstName: user.signInDetails?.given_name || '',
-            lastName: user.signInDetails?.family_name || ''
+            firstName: user.userId || '',
+            lastName: user.username || ''
           }));
         }
       } catch (error) {
