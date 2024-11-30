@@ -1,27 +1,60 @@
 import { getCurrentUser, signOut as amplifySignOut, fetchAuthSession, signInWithRedirect, fetchUserAttributes } from 'aws-amplify/auth';
-import { configureClientside } from './amplifyClient';
+import { configureClientside, configureServerside } from './amplifyClient';
 
-// Initialize Amplify on the client side
-if (typeof window !== 'undefined') {
-  configureClientside();
+export interface AppUser {
+  userId: string;
+  username: string;
 }
 
-export async function getAuthUser() {
+// Initialize Amplify based on environment
+if (typeof window !== 'undefined') {
+  configureClientside();
+} else {
+  configureServerside();
+}
+
+export async function getAuthUser(): Promise<AppUser | null> {
   try {
     const session = await fetchAuthSession();
+    console.log('Auth session environment:', typeof window === 'undefined' ? 'server' : 'client');
+    console.log('Auth session tokens:', session?.tokens ? 'present' : 'missing');
     
-    if (!session.tokens) {
+    if (!session?.tokens?.accessToken) {
+      console.log('No access token found in session');
       return null;
     }
-    
-    const user = await getCurrentUser();
-    
-    return {
-      userId: user.userId,
-      username: user.username
-    };
+
+    // For server-side components, extract user info from the token
+    if (typeof window === 'undefined') {
+      try {
+        const payload = session.tokens.accessToken.payload;
+        const user = {
+          userId: payload.sub,
+          username: payload.username || payload['cognito:username']
+        };
+        console.log('Server-side user extracted:', user);
+        return user;
+      } catch (error) {
+        console.error('Error extracting user from token:', error);
+        return null;
+      }
+    }
+
+    // For client-side components, use getCurrentUser
+    try {
+      const user = await getCurrentUser();
+      console.log('Client-side user:', user);
+      
+      return {
+        userId: user.userId,
+        username: user.username
+      };
+    } catch (userError) {
+      console.error('Error getting current user:', userError);
+      return null;
+    }
   } catch (error: any) {
-    console.error('No user found or error:', error);
+    console.error('Auth error:', error);
     return null;
   }
 }

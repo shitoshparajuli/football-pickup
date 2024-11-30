@@ -32,8 +32,8 @@ function CheckinForm() {
         if (user) {
           setFormData(prev => ({
             ...prev,
-            firstName: user.userId || '',
-            lastName: user.username || ''
+            firstName: String(user.userId || ''),
+            lastName: String(user.username || '')
           }));
         }
       } catch (error: any) {

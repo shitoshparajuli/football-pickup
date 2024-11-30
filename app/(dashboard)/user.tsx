@@ -12,11 +12,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getAuthUser, signOut } from '@/lib/authUtils';
-import { type AuthUser } from 'aws-amplify/auth';
+import { getAuthUser, signOut, type AppUser } from '@/lib/authUtils';
 
 export function User() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
