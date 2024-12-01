@@ -28,9 +28,17 @@ export async function getAuthUser(): Promise<AppUser | null> {
     if (typeof window === 'undefined') {
       try {
         const payload = session.tokens.accessToken.payload;
-        const user = {
-          userId: payload.sub,
-          username: payload.username || payload['cognito:username']
+        const userId = payload.sub;
+        const username = payload.username || payload['cognito:username'];
+        
+        if (!userId || !username) {
+          console.error('Missing required user fields in token payload');
+          return null;
+        }
+
+        const user: AppUser = {
+          userId,
+          username: String(username)
         };
         console.log('Server-side user extracted:', user);
         return user;
@@ -44,6 +52,11 @@ export async function getAuthUser(): Promise<AppUser | null> {
     try {
       const user = await getCurrentUser();
       console.log('Client-side user:', user);
+      
+      if (!user.userId || !user.username) {
+        console.error('Missing required user fields from getCurrentUser');
+        return null;
+      }
       
       return {
         userId: user.userId,

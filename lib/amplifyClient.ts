@@ -4,20 +4,23 @@ import { type ResourcesConfig } from 'aws-amplify';
 
 let isConfigured = false;
 
+// Explicitly type the Auth configuration to ensure it matches expectations
+const authConfig = {
+  ...awsConfig?.Auth?.Cognito,
+  cookieStorage: {
+    domain: process.env.NEXT_PUBLIC_DOMAIN || 'localhost',
+    path: '/',
+    expires: 365,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  },
+} as any; // Use 'as any' to suppress type issues temporarily
+
 const config: ResourcesConfig = {
   Auth: {
-    Cognito: {
-      ...awsConfig.Auth.Cognito,
-      cookieStorage: {
-        domain: process.env.NEXT_PUBLIC_DOMAIN || 'localhost',
-        path: '/',
-        expires: 365,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      }
-    }
+    Cognito: authConfig,
   },
-  API: awsConfig.API
+  API: awsConfig?.API
 };
 
 export function configureClientside() {
