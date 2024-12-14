@@ -1,7 +1,7 @@
-'use client';
-
 import Image from 'next/image';
 import { GameCheckinButton } from '@/components/game-signup-button';
+
+export const dynamic = 'force-dynamic';
 
 export default function HomePage() {
   return (
@@ -14,6 +14,7 @@ export default function HomePage() {
             width={200}
             height={200}
             className="mx-auto mb-6"
+            priority
           />
           <h1 className="text-4xl font-bold mb-4 text-gray-800">Welcome to Everest Warriors</h1>
           <p className="text-xl mb-8 text-gray-600">

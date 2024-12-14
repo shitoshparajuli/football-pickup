@@ -1,87 +1,111 @@
-'use client';
-
 import { Suspense } from 'react';
 import { getAuthUser } from '@/lib/authUtils';
 import { getUserProfile } from '@/lib/userApi';
-import { redirect } from 'next/navigation';
+import { runWithAmplifyServerContext } from '@/lib/amplifyServer';
+import { fetchAuthSession } from 'aws-amplify/auth/server';
+import { cookies } from 'next/headers';
+import ProfileContent from './profile-content';
 
-interface Profile {
-  FirstName: string;
-  LastName: string;
-  PreferredPositions: string[];
-}
-
-function ProfileContent({ profile }: { profile: Profile }) {
-  return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Profile</h2>
-          <button
-            onClick={() => redirect('/profile/edit')}
-            className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          >
-            Edit Profile
-          </button>
-        </div>
-        
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-sm font-medium text-gray-500">Name</h3>
-            <p className="mt-1 text-lg">{profile.FirstName} {profile.LastName}</p>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-medium text-gray-500">Preferred Positions</h3>
-            <div className="mt-2 space-y-2">
-              {profile.PreferredPositions.map((position, index) => (
-                <div
-                  key={position}
-                  className="p-3 bg-gray-50 border border-gray-200 rounded-md"
-                >
-                  {index + 1}. {position}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// This ensures the page is rendered at request time
+export const dynamic = 'force-dynamic';
 
 async function ProfileData() {
   try {
-    const user = await getAuthUser();
-    if (!user?.userId) {
-      redirect('/login');
+    // Get auth session using server context
+    const authenticated = await runWithAmplifyServerContext({
+      nextServerContext: { cookies },
+      operation: async (contextSpec) => {
+        try {
+          const session = await fetchAuthSession(contextSpec);
+          if (!session.tokens?.accessToken) {
+            console.log('No access token in server context');
+            return null;
+          }
+          const payload = session.tokens.accessToken.payload;
+          const userId = payload.sub;
+          const username = payload.username || payload['cognito:username'];
+
+          if (!userId || typeof userId !== 'string') {
+            console.log('Invalid user ID in token payload');
+            return null;
+          }
+
+          if (!username || typeof username !== 'string') {
+            console.log('Invalid username in token payload');
+            return null;
+          }
+
+          return { userId, username };
+        } catch (error) {
+          console.error('Server auth error:', error);
+          return null;
+        }
+      }
+    });
+
+    if (!authenticated) {
+      console.log('No authenticated user found');
+      return (
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please log in to view your profile</p>
+          <a 
+            href="/login"
+            className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          >
+            Log In
+          </a>
+        </div>
+      );
     }
 
-    const profile = await getUserProfile(user.userId);
+    const profile = await getUserProfile(authenticated.userId);
     if (!profile) {
-      redirect('/profile/edit');
+      console.log('No profile found for user:', authenticated.userId);
+      return (
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please complete your profile</p>
+          <a 
+            href="/profile/edit"
+            className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          >
+            Complete Profile
+          </a>
+        </div>
+      );
     }
 
     return <ProfileContent profile={profile} />;
   } catch (error) {
     console.error('Error loading profile:', error);
-    redirect('/login');
+    return (
+      <div className="text-center">
+        <p className="text-red-600 mb-4">Error loading profile</p>
+        <a 
+          href="/login"
+          className="inline-block px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+        >
+          Try Again
+        </a>
+      </div>
+    );
   }
 }
 
 export default async function ProfilePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-semibold mb-4">Loading...</h1>
-            <p className="text-gray-600">Please wait...</p>
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <h1 className="text-2xl font-semibold mb-4">Loading...</h1>
+              <p className="text-gray-600">Please wait...</p>
+            </div>
           </div>
-        </div>
-      }
-    >
-      <ProfileData />
-    </Suspense>
+        }
+      >
+        <ProfileData />
+      </Suspense>
+    </div>
   );
 }

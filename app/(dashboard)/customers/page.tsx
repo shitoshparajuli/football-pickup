@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Card,
   CardContent,
@@ -7,6 +5,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+
+// This ensures the page is rendered at request time
+export const dynamic = 'force-dynamic';
 
 export default function CustomersPage() {
   return (
