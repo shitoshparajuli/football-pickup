@@ -13,10 +13,12 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getAuthUser, signOut, type AppUser } from '@/lib/authUtils';
+import { getUserProfile } from '@/lib/userApi';
 
 export function User() {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -25,6 +27,12 @@ export function User() {
         const currentUser = await getAuthUser();
         console.log('Current user:', currentUser);
         setUser(currentUser);
+        if (currentUser) {
+          console.log('User found:', currentUser);
+          const profileData = await getUserProfile(currentUser?.userId || ''); 
+          console.log('User name:', profile?.FirstName);
+          setProfile(profileData);
+        }
       } catch (error) {
         console.error('Auth check error:', error);
       } finally {
@@ -59,7 +67,7 @@ export function User() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>
-          {loading ? 'Loading...' : user ? user.username : 'Guest'}
+          {loading ? 'Loading...' : profile ? `Hi, ${profile.FirstName}` : 'Guest'}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

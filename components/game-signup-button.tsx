@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { GoogleIcon } from '@/components/ui/google-icon';
 
 export function GameCheckinButton() {
   const [showDialog, setShowDialog] = useState(false);
@@ -66,11 +67,18 @@ export function GameCheckinButton() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
-            <Button onClick={handleGuestCheckin}>
-              Continue as Guest
-            </Button>
-            <Button onClick={handleSignIn} variant="outline">
+            <Button
+              className="w-full flex items-center gap-2"
+              onClick={handleSignIn}
+              variant="default"
+            >
+              <GoogleIcon />
               Sign in with Google
+            </Button>
+            <Button onClick={handleGuestCheckin}
+              className="w-full flex items-center gap-2"
+              variant="outline">
+              Continue as Guest
             </Button>
           </div>
         </DialogContent>

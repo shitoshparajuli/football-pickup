@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { GameCheckinButton } from '@/components/game-signup-button';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +21,15 @@ export default function HomePage() {
           <p className="text-xl mb-8 text-gray-600">
             Join us for an exciting pickup football game!
           </p>
-          <GameCheckinButton />
+          <div className="space-y-4">
+            <GameCheckinButton />
+            <Link 
+              href="/create-game"
+              className="inline-block bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+            >
+              Create New Game
+            </Link>
+          </div>
         </div>
       </main>
 

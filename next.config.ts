@@ -1,4 +1,5 @@
-export default {
+/** @type {import('next').NextConfig} */
+const config = {
   images: {
     remotePatterns: [
       {
@@ -10,5 +11,8 @@ export default {
         hostname: '*.public.blob.vercel-storage.com'
       }
     ]
-  }
+  },
+  output: 'standalone',
 };
+
+export default config;

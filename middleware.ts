@@ -10,7 +10,6 @@ const protectedPaths = [
 
 // Paths that should redirect to login if already authenticated
 const authPaths = [
-  '/login',
   '/signup'
 ];
 
@@ -43,7 +42,7 @@ export async function middleware(request: NextRequest) {
       }
     });
 
-    // Handle authentication paths (login/signup)
+    // Handle authentication paths (signup)
     if (isAuthPath && authenticated) {
       return NextResponse.redirect(new URL('/profile', request.url));
     }
@@ -68,7 +67,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - login (login page)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)'
+    '/((?!api|_next/static|_next/image|favicon.ico|login).*)'
   ]
 };
